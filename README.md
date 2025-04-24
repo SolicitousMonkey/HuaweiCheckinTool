@@ -39,7 +39,7 @@ Wechat：wmwm_zwm
 
 建立了一个互助群，不知道怎么用的可以联系我，创建这个repo也是希望可以**交到更多朋友~**
 
-<img src="docs/USAGE/image-20250423222211228.png" alt="image-20250423222211228" style="zoom:50%;" />
+<img src="docs/USAGE/image-20250423222211228.png" alt="image-20250423222211228" style="zoom: 25%;" />
 
 ## 📥免责声明 
 

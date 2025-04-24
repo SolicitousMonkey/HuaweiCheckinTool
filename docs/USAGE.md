@@ -8,7 +8,7 @@
 
 打开 Welink，点击左边栏的「业务」 → 「我要入职」 → 「我要入职Web」
 
-<img src="D:\zwming\github\huawei-onboard-helper\docs\USAGE\image-20250424191321565.png" alt="image-20250424191321565" style="zoom:50%;" />
+<img src="USAGE\image-20250424191321565.png" alt="image-20250424191321565" style="zoom:50%;" />
 
 ------
 
@@ -20,7 +20,7 @@
 
 - 登录账号
 
-  ![image-20250424191343080](D:\zwming\github\huawei-onboard-helper\docs\USAGE\image-20250424191343080.png)
+  ![image-20250424191343080](USAGE\image-20250424191343080.png)
 
   
 
@@ -34,7 +34,7 @@
 
 - 在左侧找到并点击 `checkinplace_query`
 
-- ![image-20250424191408865](D:\zwming\github\huawei-onboard-helper\docs\USAGE\image-20250424191408865.png)
+- ![image-20250424191408865](USAGE\image-20250424191408865.png)
 
   
 
@@ -48,7 +48,7 @@
 
 - 鼠标全选（Ctrl+A），复制这些内容
 
-  ![image-20250424191454737](D:\zwming\github\huawei-onboard-helper\docs\USAGE\image-20250424191454737.png)
+  ![image-20250424191454737](USAGE\image-20250424191454737.png)
 
   
 
@@ -58,7 +58,7 @@
 
 **务必点击“显示更多”按钮再复制，否则复制不全！**
 
-![image-20250424191530987](D:\zwming\github\huawei-onboard-helper\docs\USAGE\image-20250424191530987.png)
+![image-20250424191530987](USAGE\image-20250424191530987.png)
 
 ------
 
@@ -94,4 +94,4 @@
 
 Wechat： wmwm_zwm
 
-<img src="USAGE/image-20250423222211228.png" alt="image-20250424191454737" style="zoom:50%;" />
+<img src="USAGE/image-20250423222211228.png" alt="image-20250424191454737" style="zoom: 25%;" />
