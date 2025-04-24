@@ -27,9 +27,11 @@
 ## ⚡ 使用方式
 
 - **下载**：点击 👉 [Windows 一键包（exe）](../../releases/latest)  
+
+> ⚠️ 第一次运行时，Windows 可能弹出 **SmartScreen 安全提示**。  
+> 点击「更多信息」→「仍要运行」，即可使用本工具。此为正常现象，仅因未签名程序的默认安全策略所致。
+
 - **教程**：首次使用请阅读 👉 [USAGE 使用教程](docs/USAGE.md)
-
-
 
 > 目前仅适配 Windows，Mac 用户可借朋友电脑运行 👀
 
@@ -39,7 +41,11 @@ Wechat：wmwm_zwm
 
 建立了一个互助群，不知道怎么用的可以联系我，创建这个repo也是希望可以**交到更多朋友~**
 
-<img src="docs/USAGE/image-20250423222211228.png" alt="image-20250423222211228" style="zoom: 25%;" />
+<p align="center">
+  <img src="docs/USAGE/image-20250423222211228.png" width="260" alt="wechat group" />
+</p>
+
+
 
 ## 📥免责声明 
 
