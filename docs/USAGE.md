@@ -20,7 +20,7 @@
 
 - 登录账号
 
-  ![image-20250424191343080](USAGE\image-20250424191343080.png)
+  <img src="USAGE\image-20250424191343080.png" alt="image-20250424191343080" style="zoom:80%;" />
 
   
 
@@ -34,7 +34,7 @@
 
 - 在左侧找到并点击 `checkinplace_query`
 
-- ![image-20250424191408865](USAGE\image-20250424191408865.png)
+- <img src="USAGE\image-20250424191408865.png" alt="image-20250424191408865" style="zoom:80%;" />
 
   
 
@@ -48,7 +48,7 @@
 
 - 鼠标全选（Ctrl+A），复制这些内容
 
-  ![image-20250424191454737](USAGE\image-20250424191454737.png)
+  <img src="USAGE\image-20250424191454737.png" alt="image-20250424191454737" style="zoom:80%;" />
 
   
 
@@ -58,7 +58,7 @@
 
 **务必点击“显示更多”按钮再复制，否则复制不全！**
 
-![image-20250424191530987](USAGE\image-20250424191530987.png)
+<img src="USAGE\image-20250424191530987.png" alt="image-20250424191530987" style="zoom:80%;" />
 
 ------
 
@@ -94,4 +94,6 @@
 
 Wechat： wmwm_zwm
 
-<img src="USAGE/image-20250423222211228.png" alt="image-20250424191454737" style="zoom: 25%;" />
+<p align="center">
+  <img src="USAGE/image-20250423222211228.png" width="260" alt="wechat group" />
+</p>
