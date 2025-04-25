@@ -6,4 +6,4 @@ build/
 __pycache__/
 .env
 icon.png
-config*
+config.txt

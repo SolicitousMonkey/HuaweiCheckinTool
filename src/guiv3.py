@@ -28,8 +28,9 @@ def load_headers() -> dict:
             k, v = line.split(": ", 1)
             headers[k] = v
 
-    if "X-Jalor-Tenantalias" not in headers:
-        print(f"{ts()} [WARN]config.txt 缺少租户信息字段 X-Jalor-Tenantalias，可能导致接口失败")
+    # DEBUG
+    # if "X-Jalor-Tenantalias" not in headers:
+    #     print(f"{ts()} [WARN]config.txt 缺少租户信息字段 X-Jalor-Tenantalias，可能导致接口失败")
 
     return headers
 
@@ -77,8 +78,14 @@ class Worker(QThread):
             self.log_sig.emit(f"{ts()} 查询可约日期…")
             datelist = self._query_available_slots(headers)
             if datelist is None:
-                self._running = False
+                # self.log_sig.emit(f"{ts()} 未能获取预约数据，{self.interval}s 后重试\n")
+                # self._sleep_interruptible(self.interval)
                 break
+
+            if datelist == "timeout":
+                # self._sleep_interruptible(self.interval)
+                self.log_sig.emit(f"{ts()} 服务器响应超时，将立即重试\n")
+                continue
 
             line = " | ".join(
                 f"{'✓' if it['date'] in self.target_dates else '─'} {it['date']}" for it in datelist
@@ -88,7 +95,11 @@ class Worker(QThread):
             matched = [it for it in datelist if it["date"] in self.target_dates]
             if matched:
                 for item in matched:
-                    if self._try_booking(headers, item):
+                    result = self._try_booking(headers, item)
+                    if result == "timeout":
+                        self.log_sig.emit(ts() + "预约失败，响应超时，将立即重新预约…\n")
+                        break  # 跳出 matched 的 for 循环，重新进入主循环
+                    elif result is True:
                         self.finish_sig.emit(item["date"])
                         self._running = False
                         return
@@ -126,18 +137,25 @@ class Worker(QThread):
             try:
                 data = r.json()
             except Exception as e:
-                self.log_sig.emit(f"{ts()} [DEBUG] JSON解析失败，返回内容: {r.text[:200]!r}\n")
+                self.log_sig.emit(f"{ts()} [DEBUG] JSON解析失败，请务必根据教程正确配置config.txt！！\n"
+                                  f"报错信息: {r.text[:200]!r}")
                 return None
 
             if "data" not in data or "dateList" not in data["data"]:
-                self.log_sig.emit(f"{ts()} [DEBUG] 返回数据结构错误，data: {data}\n")
+                self.log_sig.emit(f"{ts()} [DEBUG] token已过期，请重新配置config.txt！！\n"
+                                  f"报错信息：{data}\n")
                 return None
 
             return data["data"]["dateList"]
 
+        except requests.exceptions.ReadTimeout as e:
+            self.log_sig.emit(f"{ts()} [TIMEOUT] 接口响应超时，人太多服务器爆了QAQ。\n")
+            # self.log_sig.emit(f"{ts()} [TIMEOUT] 接口响应超时，请检查网络或放宽请求频率。\n")
+            return "timeout"
         except Exception as e:
-            self.log_sig.emit(f"{ts()} [DEBUG] 请求异常: {e}\n")
+            self.log_sig.emit(f"{ts()} [ERROR] token已过期，请重新复制config.txt。\n报错信息: {e.__class__.__name__} - {e}")
             return None
+
     def _try_booking(self, headers, item):
         payload = {
             "localeId": "zh_CN",
@@ -148,15 +166,29 @@ class Worker(QThread):
             }
         }
         self.log_sig.emit(ts() + f"提交预约 {item['date']} …")
-        r = requests.post(BOOK_URL, headers=headers, json=payload, timeout=(3, 10))
-        r.raise_for_status()
-        resp = r.json()
+        try:
+            r = requests.post(BOOK_URL, headers=headers, json=payload, timeout=(3, 20))
+            r.raise_for_status()
+            resp = r.json()
 
-        if str(resp.get("success")).lower() == "true" or resp.get("code") in (0, "0"):
-            self.log_sig.emit(ts() + "🎉🎉🎉预约成功🎉🎉🎉")
-            return True
-        else:
-            self.log_sig.emit(ts() + f"预约失败: {resp.get('message', resp)}\n")
+            if str(resp.get("success")).lower() == "true" or resp.get("code") in (0, "0"):
+                self.log_sig.emit(ts() + "🎉🎉🎉预约成功🎉🎉🎉")
+                return True
+            else:
+                self.log_sig.emit(ts() + f"预约失败: {resp.get('message', resp)}，{self.interval}s后重试\n")
+                return False
+        except requests.exceptions.Timeout:
+            self.log_sig.emit(ts() + "预约请求超时，人太多服务器爆了QAQ\n")
+            return "timeout"
+
+        except requests.exceptions.RequestException as e:
+            self.log_sig.emit(ts() + f"[ERROR] 提交预约失败，我也不知道这是个什么报错，"
+                                     f"如果遇到请加我微信把报错信息发给我：{e.__class__.__name__} - {e}\n")
+            return False
+
+        except Exception as e:
+            self.log_sig.emit(ts() + f"[ERROR] 未知异常：我也不知道这是个什么报错，"
+                                     f"如果遇到请加我微信把报错信息发给我：{e.__class__.__name__} - {e}\n")
             return False
 
 
@@ -183,9 +215,9 @@ class MainWindow(QWidget):
         self.interval_spin.setValue(10)
         self.interval_spin.setSuffix("秒")
 
-        interval_note = QLabel("为减少请求压力，最小查询间隔设为 5 秒")
+        interval_note = QLabel("为减少请求压力，最小查询间隔设为 10 秒")
         interval_note.setStyleSheet("color: gray; font-size: 12px;")
-        self.interval_spin.valueChanged.connect(self._check_interval_validity)  # 绑定验证函数
+        self.interval_spin.valueChanged.connect(self._check_interval_validity)
 
         # -------- 入职城市选择 --------
         city_row = QHBoxLayout()
@@ -231,6 +263,7 @@ class MainWindow(QWidget):
         form.addRow(QLabel("预约日期（可多选）："))
         form.addRow(grid)
 
+
         button_layout = QHBoxLayout()
         for btn in (self.submit_btn, self.query_btn, self.stop_btn):
             btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -254,6 +287,9 @@ class MainWindow(QWidget):
             return
 
         interval = self.interval_spin.value()
+        if interval < 10:
+            self.log_box.append("[WARN] 查询间隔不能小于 10 秒，请重新设置！\n")
+            return
         self.submit_btn.setEnabled(False)
         self.stop_btn.setEnabled(True)
         self.log_box.append(f"{ts()} 开始后台抢号任务，间隔 {interval}s …")
@@ -309,12 +345,12 @@ class MainWindow(QWidget):
         except FileNotFoundError as fe:
             QMessageBox.critical(self, "错误", str(fe))
         except Exception as e:
-            self.log_box.append(f"{ts()} 查询失败: {e}\n")
+            self.log_box.append(f"{ts()} 查询失败，token已过期，请重新复制config.txt。报错信息: {e}\n")
 
     def _check_interval_validity(self, val):
-        if val < 5:
-            self.interval_spin.setValue(5)
-            self.log_box.append("[提示] 查询间隔不能小于 5 秒，已自动更正为 5 秒。\n")
+        if val < 10:
+            self.interval_spin.setValue(10)
+            self.log_box.append("[提示] 为避免给服务器造成过大压力，查询间隔不能小于 10 秒，已自动更正为 10 秒。")
 
     # ───────── 入口 ─────────
 if __name__ == "__main__":
