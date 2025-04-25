@@ -181,7 +181,11 @@ class MainWindow(QWidget):
         self.interval_spin = QSpinBox()
         self.interval_spin.setRange(1, 3600)
         self.interval_spin.setValue(10)
-        self.interval_spin.setSuffix(" 秒")
+        self.interval_spin.setSuffix("秒")
+
+        interval_note = QLabel("为减少请求压力，最小查询间隔设为 5 秒")
+        interval_note.setStyleSheet("color: gray; font-size: 12px;")
+        self.interval_spin.valueChanged.connect(self._check_interval_validity)  # 绑定验证函数
 
         # -------- 入职城市选择 --------
         city_row = QHBoxLayout()
@@ -306,6 +310,11 @@ class MainWindow(QWidget):
             QMessageBox.critical(self, "错误", str(fe))
         except Exception as e:
             self.log_box.append(f"{ts()} 查询失败: {e}\n")
+
+    def _check_interval_validity(self, val):
+        if val < 5:
+            self.interval_spin.setValue(5)
+            self.log_box.append("[提示] 查询间隔不能小于 5 秒，已自动更正为 5 秒。\n")
 
     # ───────── 入口 ─────────
 if __name__ == "__main__":
